@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  web:
+    build: ./server
+    command: /entrypoint.sh
+    expose:
+      - 8000
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - DATABASE=${DATABASE}
+      - SQL_ENGINE=${SQL_ENGINE}
+      - SQL_DATABASE=${SQL_DATABASE}
+      - SQL_USER=${SQL_USER}
+      - SQL_PASSWORD=${SQL_PASSWORD}
+      - SQL_HOST=${SQL_HOST}
+      - SQL_PORT=${SQL_PORT}
+
+  nginx:
+    build: ./config/nginx
+    ports:
+      # Host:Container
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:

@@ -1,0 +1,42 @@
+__pycache__/
+migrations/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Secrets & Environment
+.env
+.DS_Store
+
+# Certificates (Generated)
+certs/*.key
+certs/*.crt
+certs/*.csr
+certs/ca.srl
+certs/*.cnf
+
+# Docker
+.docker_data/
