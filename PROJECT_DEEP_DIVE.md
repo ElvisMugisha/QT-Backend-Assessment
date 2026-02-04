@@ -119,6 +119,31 @@ Before diving into code, you must understand these terms as they are the foundat
 
 ---
 
+### G. The Messenger: `client/client.py`
+
+**Location:** `client/client.py`
+**Role:** The VIP Guest.
+
+- **Function:** Simulates the trusted user/service that needs to report its status. It is the "Client" in "Client-Server".
+- **The "Magic" Line:**
+  ```python
+  requests.patch(url, cert=(cert_path, key_path), verify=ca_path)
+  ```
+- **Breakdown:**
+  - `cert=(cert, key)`: This is the **mTLS (Mutual TLS)** trigger.
+    - **Standard HTTPS:** Client checks Server's ID.
+    - **mTLS (This Line):** Client ALSO sends its own "Passport" (`client.crt`) and signs it with its "Pen" (`client.key`).
+    - **Result:** Nginx receives this, verifies the signature against the `ca.crt`, and allows entry.
+  - `verify=ca_path`: This is **Server Verification**.
+    - **Meaning:** "I will only talk to you if your Server ID was signed by _this_ CA".
+    - **Why:** Since we created a self-signed CA, your computer doesn't trust it by default (unlike Google or Amazon). We must explicitly tell the script to trust our custom `ca.crt`.
+- **What if we change it?**
+  - **Remove `cert`:** Nginx returns `400 Bad Request` ("No required SSL certificate was sent"). The door stays shut.
+  - **Remove `verify`:** The script will fail with an `SSLError` because it thinks the server is untrustworthy (self-signed).
+  - **Wrong Cert:** If you use `bad_client.crt` (Task 2 Scenario), Nginx accepts the SSL connection (it's a valid cert) but Python logic returns `400` because the CN isn't an email.
+
+---
+
 ## 3. Directory Structure Explaination
 
 **Why `server/apps/accounts`?**
